@@ -14,7 +14,7 @@ import GitHub from "./ui/icons/github";
 import Google from "./ui/icons/google";
 import DEFAULTS, { PATHS } from "@/lib/consts";
 
-// Zod schema para validación
+// Zod schema for validation
 const loginSchema = z.object({
     email: z
         .string()
