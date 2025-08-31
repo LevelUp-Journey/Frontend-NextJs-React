@@ -1,5 +1,3 @@
 export default function DashboardPage() {
-    return <main>
-        
-    </main>
+    return <main>sdas</main>;
 }

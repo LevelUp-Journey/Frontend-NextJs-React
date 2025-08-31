@@ -18,13 +18,14 @@ export async function generateStaticParams() {
     return locales.map((locale) => ({ locale }));
 }
 
-export default function LocaleLayout({
+export default async function LocaleLayout({
     children,
-    params: { locale },
+    params,
 }: {
     children: React.ReactNode;
-    params: { locale: Locale };
+    params: Promise<{ locale: Locale }>;
 }) {
+    const { locale } = await params;
     return (
         <html lang={locale} suppressHydrationWarning>
             <body
