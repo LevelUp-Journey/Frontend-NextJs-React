@@ -7,7 +7,8 @@ import { useState } from "react";
 export default function EditChallengePage() {
     const params = useParams();
     const searchParams = useSearchParams();
-    const editStep = searchParams.get("step") || ChallengeEditStep.ADD_VERSION;
+    const editStep =
+        searchParams.get("step") || ChallengeEditStep.TITLE_DESCRIPTION;
     const challengeId = params.challengeId;
 
     const [step, setStep] = useState(Number.parseInt(editStep.toString()));

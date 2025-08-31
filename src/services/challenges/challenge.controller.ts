@@ -1,9 +1,16 @@
 import { CreateChallengeAction } from "./challenge.actions";
+import { ChallengeAssembler } from "./challenge.assembler";
+import { Challenge } from "./challenge.entity";
 import { CreateChallengeRequest } from "./challenge.response";
 
 export class ChallengeController {
-    public static async CreateChallenge(request: CreateChallengeRequest) {
+    public static async CreateChallenge(
+        request: CreateChallengeRequest,
+    ): Promise<Challenge> {
         const res = await CreateChallengeAction(request);
-        return res;
+
+        const challenge = ChallengeAssembler.ToEntityFromResponse(res);
+
+        return challenge;
     }
 }

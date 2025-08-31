@@ -1,3 +1,4 @@
+import { Locale } from "./i18n";
 import { ChallengeEditStep } from "./types";
 
 const PATHS = {
@@ -9,8 +10,12 @@ const PATHS = {
         EDIT: {
             ROOT: (challengeId: string) =>
                 `/dashboard/challenges/edit/${challengeId}`,
-            STEP: (challengeId: string, stepId: ChallengeEditStep) =>
-                `/dashboard/challenges/edit/${challengeId}/step/${stepId}`,
+            STEP: (
+                challengeId: string,
+                stepId: ChallengeEditStep,
+                locale: Locale,
+            ) =>
+                `/${locale}/dashboard/challenges/edit/${challengeId}?step=${stepId}`,
         },
     },
     TERMS: "/terms",

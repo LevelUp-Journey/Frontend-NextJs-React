@@ -34,16 +34,16 @@ export default function NewChallengePage() {
                 // TODO: Remove this line when you implement the logic
                 teacherId: "ACTION_ALREADY_SET_TEACHER_ID",
             });
-            console.log("Challenge created:", res);
 
             // Here you could redirect the user or show a success message
             toast.success(dict["newChallenge.success"]);
-            // router.push(
-            //     PATHS.CHALLENGES.EDIT.STEP(
-            //         res.id,
-            //         ChallengeEditStep.ADD_VERSION,
-            //     ),
-            // );
+            router.push(
+                PATHS.CHALLENGES.EDIT.STEP(
+                    res.id,
+                    ChallengeEditStep.ADD_VERSION,
+                    locale,
+                ),
+            );
         } catch (error) {
             console.error("Error creating challenge:", error);
             toast.error(dict["newChallenge.error"]);
