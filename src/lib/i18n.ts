@@ -1,14 +1,18 @@
-import 'server-only'
-
 export const defaultLocale = "en" as const;
 export const locales = ["en", "es"] as const;
 
 export type Locale = (typeof locales)[number];
 
-const dictionaries = {
-  en: () => import('./dictionaries/en.json').then((module) => module.default),
-  es: () => import('./dictionaries/es.json').then((module) => module.default),
+// Static imports for client-side usage
+import enTranslations from './dictionaries/en.json';
+import esTranslations from './dictionaries/es.json';
+
+const translations = {
+  en: enTranslations,
+  es: esTranslations,
 } as const;
 
-export const getDictionary = async (locale: Locale) =>
-  dictionaries[locale]() || dictionaries[defaultLocale]();
+// For client components - synchronous version
+export function getDictionary(locale: Locale) {
+  return translations[locale] || translations[defaultLocale];
+}
