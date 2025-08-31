@@ -21,10 +21,9 @@ const PATHS = {
                 `/dashboard/challenges/edit/${challengeId}`,
             STEP: (
                 challengeId: string,
-                stepId: ChallengeEditStep,
+                step: ChallengeEditStep,
                 locale: Locale,
-            ) =>
-                `/${locale}/dashboard/challenges/edit/${challengeId}?step=${stepId}`,
+            ) => `/${locale}/dashboard/challenges/edit/${challengeId}/${step}`,
         },
     },
     TERMS: "/terms",

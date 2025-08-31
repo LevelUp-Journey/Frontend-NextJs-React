@@ -40,7 +40,7 @@ export default function NewChallengePage() {
             router.push(
                 PATHS.CHALLENGES.EDIT.STEP(
                     res.id,
-                    ChallengeEditStep.ADD_VERSION,
+                    ChallengeEditStep.VERSIONS,
                     locale,
                 ),
             );

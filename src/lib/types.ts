@@ -1,5 +1,5 @@
 export enum ChallengeEditStep {
-    TITLE_DESCRIPTION = 1,
-    ADD_VERSION = 2, // Default for this page. In most cases this page will be accessed from the creation challenge page.
-    ADD_TEST = 3,
+    CHALLENGE = "", // Root for challenge editing page
+    VERSIONS = "versions", // Default for this page. In most cases this page will be accessed from the creation challenge page.
+    TESTS = "tests",
 }
