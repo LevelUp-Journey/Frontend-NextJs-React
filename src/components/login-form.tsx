@@ -6,27 +6,27 @@ import { z } from "zod";
 import Link from "next/link";
 import { GalleryVerticalEnd } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn, getLocalizedPaths } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import GitHub from "./ui/icons/github";
 import Google from "./ui/icons/google";
-import { getLocalizedPaths } from "@/lib/consts";
 import { getDictionary, type Locale } from "@/lib/i18n";
 
 // Create dynamic schema based on locale
-const createLoginSchema = (dict: ReturnType<typeof getDictionary>) => z.object({
-    email: z
-        .string()
-        .min(1, dict["login.email.required"])
-        .email(dict["login.email.invalid"]),
-    password: z
-        .string()
-        .min(1, dict["login.password.required"])
-        .min(6, dict["login.password.minLength"])
-        .max(100, dict["login.password.maxLength"]),
-});
+const createLoginSchema = (dict: ReturnType<typeof getDictionary>) =>
+    z.object({
+        email: z
+            .string()
+            .min(1, dict["login.email.required"])
+            .email(dict["login.email.invalid"]),
+        password: z
+            .string()
+            .min(1, dict["login.password.required"])
+            .min(6, dict["login.password.minLength"])
+            .max(100, dict["login.password.maxLength"]),
+    });
 
 type LoginFormData = z.infer<ReturnType<typeof createLoginSchema>>;
 
@@ -40,7 +40,7 @@ export function LoginForm({
     const dict = getDictionary(locale);
     const localizedPaths = getLocalizedPaths(locale);
     const loginSchema = createLoginSchema(dict);
-    
+
     const [step, setStep] = useState<"email" | "password">("email");
 
     const {
@@ -100,11 +100,15 @@ export function LoginForm({
                     <div className="flex flex-col gap-6">
                         {step === "email" ? (
                             <div className="grid gap-3">
-                                <Label htmlFor="email">{dict["login.email"]}</Label>
+                                <Label htmlFor="email">
+                                    {dict["login.email"]}
+                                </Label>
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder={dict["login.email.placeholder"]}
+                                    placeholder={
+                                        dict["login.email.placeholder"]
+                                    }
                                     {...register("email")}
                                     className={
                                         errors.email ? "border-red-500" : ""
@@ -119,7 +123,9 @@ export function LoginForm({
                         ) : (
                             <>
                                 <div className="grid gap-3">
-                                    <Label htmlFor="email-display">{dict["login.email"]}</Label>
+                                    <Label htmlFor="email-display">
+                                        {dict["login.email"]}
+                                    </Label>
                                     <div className="flex items-center gap-2">
                                         <Input
                                             id="email-display"
@@ -139,11 +145,15 @@ export function LoginForm({
                                     </div>
                                 </div>
                                 <div className="grid gap-3">
-                                    <Label htmlFor="password">{dict["login.password"]}</Label>
+                                    <Label htmlFor="password">
+                                        {dict["login.password"]}
+                                    </Label>
                                     <Input
                                         id="password"
                                         type="password"
-                                        placeholder={dict["login.password.placeholder"]}
+                                        placeholder={
+                                            dict["login.password.placeholder"]
+                                        }
                                         {...register("password")}
                                         className={
                                             errors.password
@@ -198,8 +208,12 @@ export function LoginForm({
             </form>
             <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
                 {dict["login.agreement"]}{" "}
-                <Link href={localizedPaths.TERMS}>{dict["login.terms"]}</Link> and{" "}
-                <Link href={localizedPaths.PRIVACY}>{dict["login.privacy"]}</Link>.
+                <Link href={localizedPaths.TERMS}>{dict["login.terms"]}</Link>{" "}
+                and{" "}
+                <Link href={localizedPaths.PRIVACY}>
+                    {dict["login.privacy"]}
+                </Link>
+                .
             </div>
         </div>
     );

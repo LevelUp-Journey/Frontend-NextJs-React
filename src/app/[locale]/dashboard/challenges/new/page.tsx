@@ -5,13 +5,18 @@ import {
     ChallengeForm,
     ChallengeFormValues,
 } from "@/components/challenge-form";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { ChallengeController } from "@/services/challenges/challenge.controller";
 import { getDictionary, Locale } from "@/lib/i18n";
+import { toast } from "sonner";
+import PATHS from "@/lib/paths";
+import { ChallengeEditStep } from "@/lib/types";
 
 export default function NewChallengePage() {
     const params = useParams();
     const locale = params.locale as Locale;
     const dict = getDictionary(locale);
+    const router = useRouter();
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -23,14 +28,25 @@ export default function NewChallengePage() {
             // For example, call the API
             console.log("Challenge data:", data);
 
-            // Simulate API delay
-            await new Promise((resolve) => setTimeout(resolve, 2000));
+            const res = await ChallengeController.CreateChallenge({
+                description: data.description,
+                title: data.title,
+                // TODO: Remove this line when you implement the logic
+                teacherId: "ACTION_ALREADY_SET_TEACHER_ID",
+            });
+            console.log("Challenge created:", res);
 
             // Here you could redirect the user or show a success message
-            alert(dict["newChallenge.success"]);
+            toast.success(dict["newChallenge.success"]);
+            // router.push(
+            //     PATHS.CHALLENGES.EDIT.STEP(
+            //         res.id,
+            //         ChallengeEditStep.ADD_VERSION,
+            //     ),
+            // );
         } catch (error) {
             console.error("Error creating challenge:", error);
-            alert(dict["newChallenge.error"]);
+            toast.error(dict["newChallenge.error"]);
         } finally {
             setIsLoading(false);
         }

@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/app-theme/theme-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Locale, locales } from "@/lib/i18n";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -41,6 +42,7 @@ export default function LocaleLayout({
                         </header>
                         {children}
                     </div>
+                    <Toaster />
                 </ThemeProvider>
             </body>
         </html>

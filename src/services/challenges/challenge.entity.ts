@@ -11,10 +11,10 @@ export enum Language {
 }
 
 export enum ChallengeState {
-    DRAFT,
-    PUBLISHED,
-    ARCHIVED,
-    DELETED,
+    DRAFT = "DRAFT",
+    PUBLISHED = "PUBLISHED",
+    ARCHIVED = "ARCHIVED",
+    DELETED = "DELETED",
 }
 
 // ========== CORE DOMAIN INTERFACES ==========

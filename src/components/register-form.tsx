@@ -6,46 +6,45 @@ import { z } from "zod";
 import Link from "next/link";
 import { GalleryVerticalEnd } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn, getLocalizedPaths } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import GitHub from "./ui/icons/github";
 import Google from "./ui/icons/google";
-import { getLocalizedPaths } from "@/lib/consts";
 import { getDictionary, type Locale } from "@/lib/i18n";
 
 // Create dynamic schema based on locale
-const createRegisterSchema = (dict: ReturnType<typeof getDictionary>) => z
-    .object({
-        email: z
-            .string()
-            .min(1, dict["register.email.required"])
-            .email(dict["register.email.invalid"]),
-        username: z
-            .string()
-            .min(1, dict["register.username.required"])
-            .min(3, dict["register.username.minLength"])
-            .max(20, dict["register.username.maxLength"])
-            .regex(
-                /^[a-zA-Z0-9_]+$/,
-                dict["register.username.pattern"],
-            ),
-        password: z
-            .string()
-            .min(1, dict["register.password.required"])
-            .min(8, dict["register.password.minLength"])
-            .max(100, dict["register.password.maxLength"])
-            .regex(
-                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-                dict["register.password.pattern"],
-            ),
-        confirmPassword: z.string().min(1, dict["register.confirmPassword.required"]),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-        message: dict["register.confirmPassword.mismatch"],
-        path: ["confirmPassword"],
-    });
+const createRegisterSchema = (dict: ReturnType<typeof getDictionary>) =>
+    z
+        .object({
+            email: z
+                .string()
+                .min(1, dict["register.email.required"])
+                .email(dict["register.email.invalid"]),
+            username: z
+                .string()
+                .min(1, dict["register.username.required"])
+                .min(3, dict["register.username.minLength"])
+                .max(20, dict["register.username.maxLength"])
+                .regex(/^[a-zA-Z0-9_]+$/, dict["register.username.pattern"]),
+            password: z
+                .string()
+                .min(1, dict["register.password.required"])
+                .min(8, dict["register.password.minLength"])
+                .max(100, dict["register.password.maxLength"])
+                .regex(
+                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+                    dict["register.password.pattern"],
+                ),
+            confirmPassword: z
+                .string()
+                .min(1, dict["register.confirmPassword.required"]),
+        })
+        .refine((data) => data.password === data.confirmPassword, {
+            message: dict["register.confirmPassword.mismatch"],
+            path: ["confirmPassword"],
+        });
 
 type RegisterFormData = {
     email: string;
@@ -72,7 +71,7 @@ export function RegisterForm({
     const dict = getDictionary(locale);
     const localizedPaths = getLocalizedPaths(locale);
     const registerSchema = createRegisterSchema(dict);
-    
+
     const [step, setStep] = useState<Step>("providers");
 
     const {
@@ -160,7 +159,8 @@ export function RegisterForm({
                                 className="w-full"
                             >
                                 <GitHub />
-                                {dict["register.continueWith"]} {dict["register.github"]}
+                                {dict["register.continueWith"]}{" "}
+                                {dict["register.github"]}
                             </Button>
                             <Button
                                 variant="outline"
@@ -168,7 +168,8 @@ export function RegisterForm({
                                 className="w-full"
                             >
                                 <Google />
-                                {dict["register.continueWith"]} {dict["register.google"]}
+                                {dict["register.continueWith"]}{" "}
+                                {dict["register.google"]}
                             </Button>
                         </div>
                         <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
@@ -208,7 +209,9 @@ export function RegisterForm({
             case "username":
                 return (
                     <div className="grid gap-3">
-                        <Label htmlFor="username">{dict["register.username"]}</Label>
+                        <Label htmlFor="username">
+                            {dict["register.username"]}
+                        </Label>
                         <Input
                             id="username"
                             type="text"
@@ -230,7 +233,9 @@ export function RegisterForm({
             case "password":
                 return (
                     <div className="grid gap-3">
-                        <Label htmlFor="password">{dict["register.password"]}</Label>
+                        <Label htmlFor="password">
+                            {dict["register.password"]}
+                        </Label>
                         <Input
                             id="password"
                             type="password"
@@ -258,7 +263,9 @@ export function RegisterForm({
                         <Input
                             id="confirmPassword"
                             type="password"
-                            placeholder={dict["register.confirmPassword.placeholder"]}
+                            placeholder={
+                                dict["register.confirmPassword.placeholder"]
+                            }
                             {...register("confirmPassword")}
                             className={
                                 errors.confirmPassword ? "border-red-500" : ""
@@ -403,8 +410,14 @@ export function RegisterForm({
 
             <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
                 {dict["register.agreement"]}{" "}
-                <Link href={localizedPaths.TERMS}>{dict["register.terms"]}</Link> {dict["register.terms"] === "Terms of Service" ? "and" : "y"}{" "}
-                <Link href={localizedPaths.PRIVACY}>{dict["register.privacy"]}</Link>.
+                <Link href={localizedPaths.TERMS}>
+                    {dict["register.terms"]}
+                </Link>{" "}
+                {dict["register.terms"] === "Terms of Service" ? "and" : "y"}{" "}
+                <Link href={localizedPaths.PRIVACY}>
+                    {dict["register.privacy"]}
+                </Link>
+                .
             </div>
         </div>
     );

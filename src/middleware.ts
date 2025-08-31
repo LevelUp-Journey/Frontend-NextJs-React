@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { defaultLocale, Locale, locales } from "./lib/i18n";
+import { defaultLocale, Locale, locales } from "./lib/i18n.server";
 
 // Get the preferred locale, similar to the above or using a library
 function getLocale(request: NextRequest): Locale {
