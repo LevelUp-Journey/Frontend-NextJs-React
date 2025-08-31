@@ -9,42 +9,51 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { getDictionary, type Locale } from "@/lib/i18n";
 
-const challengeFormSchema = z.object({
+const createChallengeFormSchema = (dict: ReturnType<typeof getDictionary>) => z.object({
     title: z
         .string()
-        .min(1, "Title is required")
-        .max(100, "Title cannot exceed 100 characters"),
+        .min(1, dict["challenge.title.required"])
+        .max(100, dict["challenge.title.maxLength"]),
     description: z
         .string()
-        .min(1, "Description is required")
-        .max(1000, "Description cannot exceed 1000 characters"),
+        .min(1, dict["challenge.description.required"])
+        .max(1000, dict["challenge.description.maxLength"]),
 });
 
-export type ChallengeFormValues = z.infer<typeof challengeFormSchema>;
+export type ChallengeFormValues = {
+    title: string;
+    description: string;
+};
 
 interface ChallengeFormProps {
     onSubmit: (data: ChallengeFormValues) => Promise<void>;
     isLoading?: boolean;
     className?: string;
+    locale: Locale;
 }
 
-export function ChallengeForm({
-    onSubmit,
-    isLoading = false,
-    className,
+export function ChallengeForm({ 
+  onSubmit, 
+  isLoading = false, 
+  className,
+  locale,
 }: ChallengeFormProps) {
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitting },
-    } = useForm<ChallengeFormValues>({
-        resolver: zodResolver(challengeFormSchema),
-        defaultValues: {
-            title: "",
-            description: "",
-        },
-    });
+  const dict = getDictionary(locale);
+  const challengeFormSchema = createChallengeFormSchema(dict);
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ChallengeFormValues>({
+    resolver: zodResolver(challengeFormSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+    },
+  });
 
     const handleFormSubmit = (data: ChallengeFormValues) => {
         onSubmit(data);
@@ -57,11 +66,11 @@ export function ChallengeForm({
                     <div className="grid gap-6">
                         {/* Title Field */}
                         <div className="grid gap-3">
-                            <Label htmlFor="title">Challenge title</Label>
+                            <Label htmlFor="title">{dict["challenge.title"]}</Label>
                             <Input
                                 id="title"
                                 type="text"
-                                placeholder="Enter the challenge title"
+                                placeholder={dict["challenge.title.placeholder"]}
                                 {...register("title")}
                                 className={errors.title ? "border-red-500" : ""}
                             />
@@ -74,10 +83,10 @@ export function ChallengeForm({
 
                         {/* Description Field */}
                         <div className="grid gap-3">
-                            <Label htmlFor="description">Description</Label>
+                            <Label htmlFor="description">{dict["challenge.description"]}</Label>
                             <Textarea
                                 id="description"
-                                placeholder="Describe the challenge in detail. Include learning objectives and specific instructions..."
+                                placeholder={dict["challenge.description.placeholder"]}
                                 rows={6}
                                 {...register("description")}
                                 className={
@@ -99,16 +108,15 @@ export function ChallengeForm({
                         disabled={isLoading || isSubmitting}
                     >
                         {isLoading || isSubmitting
-                            ? "Creating challenge..."
-                            : "Create challenge"}
+                            ? dict["challenge.creating"]
+                            : dict["challenge.create"]}
                     </Button>
                 </div>
             </form>
 
             {/* Helper Text */}
             <div className="text-muted-foreground text-center text-xs text-balance">
-                Once created, you can add tests and configure supported
-                programming languages.
+                {dict["challenge.helpText"]}
             </div>
         </div>
     );

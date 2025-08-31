@@ -1,0 +1,21 @@
+{
+    "challenge": {
+        "title": "Challenge title",
+        "title.placeholder": "Enter the challenge title",
+        "title.required": "Title is required",
+        "title.maxLength": "Title cannot exceed 100 characters",
+        "description": "Description",
+        "description.placeholder": "Describe the challenge in detail. Include learning objectives and specific instructions...",
+        "description.required": "Description is required",
+        "description.maxLength": "Description cannot exceed 1000 characters",
+        "create": "Create challenge",
+        "creating": "Creating challenge...",
+        "helpText": "Once created, you can add tests and configure supported programming languages."
+    },
+    "newChallenge": {
+        "title": "Create new challenge",
+        "description": "Complete the fields to create a new programming challenge for your students.",
+        "success": "Challenge created successfully!",
+        "error": "Error creating the challenge"
+    }
+}
