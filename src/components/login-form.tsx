@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import GitHub from "./ui/icons/github";
 import Google from "./ui/icons/google";
 import { getDictionary, type Locale } from "@/lib/i18n";
+import SitDownAppPet from "./ui/images/pet/sit-down";
+import { DEFAULTS } from "@/lib/consts";
 
 // Create dynamic schema based on locale
 const createLoginSchema = (dict: ReturnType<typeof getDictionary>) =>
@@ -85,10 +87,14 @@ export function LoginForm({
                             href={localizedPaths.HOME}
                             className="flex flex-col items-center gap-2 font-medium"
                         >
-                            <div className="flex size-8 items-center justify-center rounded-md">
-                                <GalleryVerticalEnd className="size-6" />
+                            <div className="flex items-center justify-center rounded-md">
+                                <SitDownAppPet
+                                    width={72}
+                                    height={72}
+                                    alt={dict["pet.alt.sitdown"]}
+                                />
                             </div>
-                            <span className="sr-only">Acme Inc.</span>
+                            <span className="sr-only">{DEFAULTS.APP_NAME}</span>
                         </Link>
                         <h1 className="text-xl font-bold">
                             {dict["login.title"]}

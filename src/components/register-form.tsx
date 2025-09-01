@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
-import { GalleryVerticalEnd } from "lucide-react";
 
 import { cn, getLocalizedPaths } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,6 +12,8 @@ import { Label } from "@/components/ui/label";
 import GitHub from "./ui/icons/github";
 import Google from "./ui/icons/google";
 import { getDictionary, type Locale } from "@/lib/i18n";
+import { DEFAULTS } from "@/lib/consts";
+import SitDownAppPet from "./ui/images/pet/sit-down";
 
 // Create dynamic schema based on locale
 const createRegisterSchema = (dict: ReturnType<typeof getDictionary>) =>
@@ -359,10 +360,14 @@ export function RegisterForm({
                             href={localizedPaths.HOME}
                             className="flex flex-col items-center gap-2 font-medium"
                         >
-                            <div className="flex size-8 items-center justify-center rounded-md">
-                                <GalleryVerticalEnd className="size-6" />
+                            <div className="flex items-center justify-center rounded-md">
+                                <SitDownAppPet
+                                    width={72}
+                                    height={72}
+                                    alt={dict["pet.alt.sitdown"]}
+                                />
                             </div>
-                            <span className="sr-only">LevelUp Journey</span>
+                            <span className="sr-only">{DEFAULTS.APP_NAME}</span>
                         </Link>
                         <h1 className="text-xl font-bold">{getStepTitle()}</h1>
                         <div className="text-center text-sm">
