@@ -1,6 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/app-theme/theme-provider";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { Locale, locales } from "@/lib/i18n";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -37,12 +36,7 @@ export default async function LocaleLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <div className="min-h-screen">
-                        <header className="fixed top-4 right-4 z-50">
-                            <LanguageSwitcher />
-                        </header>
-                        {children}
-                    </div>
+                    <div className="min-h-screen bg-background">{children}</div>
                     <Toaster />
                 </ThemeProvider>
             </body>
