@@ -38,6 +38,9 @@
     "login.agreement": "By clicking continue, you agree to our",
     "login.terms": "Terms of Service",
     "login.privacy": "Privacy Policy",
+    "login.success": "Login successful! Redirecting...",
+    "login.error": "Login failed. Please check your credentials.",
+    "login.error.generic": "An unexpected error occurred. Please try again.",
 
     "register.title": "Create your account",
     "register.email": "Email",
@@ -74,6 +77,9 @@
     "register.privacy": "Privacy Policy",
     "register.haveAccount": "Already have an account?",
     "register.signin": "Sign in",
+    "register.success": "Account created successfully! Redirecting...",
+    "register.error": "Registration failed. Please try again.",
+    "register.error.generic": "An unexpected error occurred during registration.",
 
     "pet.alt.sitdown": "Pet sitting down"
 }

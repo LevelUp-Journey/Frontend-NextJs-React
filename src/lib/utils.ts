@@ -17,6 +17,7 @@ export const getLocalizedPaths = (locale: Locale) => ({
     HOME: getLocalizedPath(PATHS.HOME, locale),
     LOGIN: getLocalizedPath(PATHS.LOGIN, locale),
     REGISTER: getLocalizedPath(PATHS.REGISTER, locale),
+    DASHBOARD: getLocalizedPath(PATHS.DASHBOARD, locale),
     TERMS: getLocalizedPath(PATHS.TERMS, locale),
     PRIVACY: getLocalizedPath(PATHS.PRIVACY, locale),
 });

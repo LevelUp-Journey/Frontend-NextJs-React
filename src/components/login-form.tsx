@@ -4,9 +4,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
-import { GalleryVerticalEnd } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { cn, getLocalizedPaths } from "@/lib/utils";
+import PATHS from "@/lib/paths";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +17,9 @@ import Google from "./ui/icons/google";
 import { getDictionary, type Locale } from "@/lib/i18n";
 import SitDownAppPet from "./ui/images/pet/sit-down";
 import { DEFAULTS } from "@/lib/consts";
+import { UserController } from "@/services/iam/user.controller";
+import { SignInRequest } from "@/services/iam/user.request";
+import { useAuth } from "@/lib/hooks/use-auth";
 
 // Create dynamic schema based on locale
 const createLoginSchema = (dict: ReturnType<typeof getDictionary>) =>
@@ -42,6 +47,8 @@ export function LoginForm({
     const dict = getDictionary(locale);
     const localizedPaths = getLocalizedPaths(locale);
     const loginSchema = createLoginSchema(dict);
+    const router = useRouter();
+    const { login } = useAuth();
 
     const [step, setStep] = useState<"email" | "password">("email");
 
@@ -65,9 +72,63 @@ export function LoginForm({
         }
     };
 
-    const onFormSubmit = (data: LoginFormData) => {
-        console.log("Login data:", data);
-        // TODO: Implement login logic
+    const onFormSubmit = async (data: LoginFormData) => {
+        try {
+            const signInRequest: SignInRequest = {
+                emailOrUsername: data.email,
+                password: data.password
+            };
+
+            const response = await UserController.signIn(signInRequest);
+            
+            if (response.success && response.data) {
+                // Use the auth hook to handle authentication
+                login(
+                    response.data.token || '',
+                    response.data.refreshToken,
+                    response.data.user
+                );
+
+                toast.success(dict["login.success"]);
+                router.push(localizedPaths.DASHBOARD);
+            } else {
+                toast.error(response.error || dict["login.error"]);
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            toast.error(dict["login.error.generic"]);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        try {
+            const redirectUri = `${window.location.origin}${PATHS.AUTH.CALLBACK.GOOGLE(locale)}`;
+            const response = await UserController.initiateGoogleOAuth(redirectUri);
+            
+            if (response.success && response.data?.authUrl) {
+                window.location.href = response.data.authUrl;
+            } else {
+                toast.error(response.error || dict["login.error.generic"]);
+            }
+        } catch (error) {
+            console.error('Google OAuth error:', error);
+            toast.error(dict["login.error.generic"]);
+        }
+    };
+
+    const handleGitHubLogin = async () => {
+        try {
+            const response = await UserController.initiateGitHubOAuth(PATHS.AUTH.CALLBACK.GITHUB(locale));
+            router.push("http://localhost:8080/api/v1/authentication/oauth2/github");
+            if (response.success && response.data?.authUrl) {
+                window.location.href = response.data.authUrl;
+            } else {
+                toast.error(response.error || dict["login.error.generic"]);
+            }
+        } catch (error) {
+            console.error('GitHub OAuth error:', error);
+            toast.error(dict["login.error.generic"]);
+        }
     };
 
     const handleFormSubmit = handleSubmit((data) => {
@@ -197,6 +258,8 @@ export function LoginForm({
                             variant="outline"
                             type="button"
                             className="w-full"
+                            onClick={handleGitHubLogin}
+                            disabled={isSubmitting}
                         >
                             <GitHub />
                             {dict["login.continueWith"]} {dict["login.github"]}
@@ -205,6 +268,8 @@ export function LoginForm({
                             variant="outline"
                             type="button"
                             className="w-full"
+                            onClick={handleGoogleLogin}
+                            disabled={isSubmitting}
                         >
                             <Google />
                             {dict["login.continueWith"]} {dict["login.google"]}

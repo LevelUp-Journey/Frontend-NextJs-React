@@ -38,6 +38,9 @@
     "login.agreement": "Al hacer clic en continuar, aceptas nuestros",
     "login.terms": "Términos de Servicio",
     "login.privacy": "Política de Privacidad",
+    "login.success": "¡Inicio de sesión exitoso! Redirigiendo...",
+    "login.error": "Error al iniciar sesión. Verifica tus credenciales.",
+    "login.error.generic": "Ocurrió un error inesperado. Inténtalo de nuevo.",
 
     "register.title": "Crea tu cuenta",
     "register.email": "Correo electrónico",
@@ -74,5 +77,8 @@
     "register.privacy": "Política de Privacidad",
     "register.haveAccount": "¿Ya tienes una cuenta?",
     "register.signin": "Iniciar sesión",
+    "register.success": "¡Cuenta creada exitosamente! Redirigiendo...",
+    "register.error": "Error en el registro. Inténtalo de nuevo.",
+    "register.error.generic": "Ocurrió un error inesperado durante el registro.",
     "pet.alt.sitdown": "La mascota está sentada sonriente."
 }

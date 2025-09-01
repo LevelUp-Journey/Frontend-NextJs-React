@@ -4,8 +4,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { cn, getLocalizedPaths } from "@/lib/utils";
+import PATHS from "@/lib/paths";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +17,9 @@ import Google from "./ui/icons/google";
 import { getDictionary, type Locale } from "@/lib/i18n";
 import { DEFAULTS } from "@/lib/consts";
 import SitDownAppPet from "./ui/images/pet/sit-down";
+import { UserController } from "@/services/iam/user.controller";
+import { SignUpRequest } from "@/services/iam/user.request";
+import { useAuth } from "@/lib/hooks/use-auth";
 
 // Create dynamic schema based on locale
 const createRegisterSchema = (dict: ReturnType<typeof getDictionary>) =>
@@ -72,6 +78,8 @@ export function RegisterForm({
     const dict = getDictionary(locale);
     const localizedPaths = getLocalizedPaths(locale);
     const registerSchema = createRegisterSchema(dict);
+    const router = useRouter();
+    const { login } = useAuth();
 
     const [step, setStep] = useState<Step>("providers");
 
@@ -136,8 +144,64 @@ export function RegisterForm({
     };
 
     const onFormSubmit = async (data: RegisterFormData) => {
-        console.log("Registration data:", data);
-        // Aquí iría la lógica de registro
+        try {
+            const signUpRequest: SignUpRequest = {
+                email: data.email,
+                username: data.username,
+                password: data.password
+            };
+
+            const response = await UserController.signUp(signUpRequest);
+            
+            if (response.success && response.data) {
+                // Use the auth hook to handle authentication
+                login(
+                    response.data.token || '',
+                    response.data.refreshToken,
+                    response.data.user
+                );
+
+                toast.success(dict["register.success"]);
+                router.push(localizedPaths.DASHBOARD);
+            } else {
+                toast.error(response.error || dict["register.error"]);
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            toast.error(dict["register.error.generic"]);
+        }
+    };
+
+    const handleGoogleRegister = async () => {
+        try {
+            const redirectUri = `${window.location.origin}${PATHS.AUTH.CALLBACK.GOOGLE(locale)}`;
+            const response = await UserController.initiateGoogleOAuth(redirectUri);
+            
+            if (response.success && response.data?.authUrl) {
+                window.location.href = response.data.authUrl;
+            } else {
+                toast.error(response.error || dict["register.error.generic"]);
+            }
+        } catch (error) {
+            console.error('Google OAuth error:', error);
+            toast.error(dict["register.error.generic"]);
+        }
+    };
+
+    const handleGitHubRegister = async () => {
+        try {
+            const redirectUri = `${window.location.origin}${PATHS.AUTH.CALLBACK.GITHUB(locale)}`;
+            const response = await UserController.initiateGitHubOAuth(redirectUri);
+            
+            if (response.success && response.data?.authUrl) {
+                window.location.href = response.data.authUrl;
+            } else {
+                toast.error(response.error || dict["register.error.generic"]);
+            }
+        } catch (error) {
+            console.error('GitHub OAuth error:', error);
+            toast.error(dict["register.error.generic"]);
+        }
     };
 
     const handleFormSubmit = handleSubmit((data) => {
@@ -158,6 +222,8 @@ export function RegisterForm({
                                 variant="outline"
                                 type="button"
                                 className="w-full"
+                                onClick={handleGitHubRegister}
+                                disabled={isSubmitting}
                             >
                                 <GitHub />
                                 {dict["register.continueWith"]}{" "}
@@ -167,6 +233,8 @@ export function RegisterForm({
                                 variant="outline"
                                 type="button"
                                 className="w-full"
+                                onClick={handleGoogleRegister}
+                                disabled={isSubmitting}
                             >
                                 <Google />
                                 {dict["register.continueWith"]}{" "}

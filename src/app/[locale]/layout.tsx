@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/app-theme/theme-provider";
+import { AuthProvider } from "@/lib/hooks/use-auth";
 import { Locale, locales } from "@/lib/i18n";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -36,8 +37,10 @@ export default async function LocaleLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <div className="min-h-screen bg-background">{children}</div>
-                    <Toaster />
+                    <AuthProvider>
+                        <div className="min-h-screen bg-background">{children}</div>
+                        <Toaster />
+                    </AuthProvider>
                 </ThemeProvider>
             </body>
         </html>

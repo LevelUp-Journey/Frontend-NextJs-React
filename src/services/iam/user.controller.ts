@@ -144,6 +144,7 @@ export class UserController {
                 `${this.basePath}/authentication/oauth/github`,
                 { params: { redirectUri } }
             );
+            console.log("RESPONSE FROM GITHUB OAUTH INITIATE:", response.data);
             return { success: true, data: response.data };
         } catch (error) {
             return this.handleError(error);
