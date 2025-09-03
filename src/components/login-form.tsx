@@ -76,17 +76,17 @@ export function LoginForm({
         try {
             const signInRequest: SignInRequest = {
                 emailOrUsername: data.email,
-                password: data.password
+                password: data.password,
             };
 
             const response = await UserController.signIn(signInRequest);
-            
+
             if (response.success && response.data) {
                 // Use the auth hook to handle authentication
                 login(
-                    response.data.token || '',
+                    response.data.token || "",
                     response.data.refreshToken,
-                    response.data.user
+                    response.data.user,
                 );
 
                 toast.success(dict["login.success"]);
@@ -95,7 +95,7 @@ export function LoginForm({
                 toast.error(response.error || dict["login.error"]);
             }
         } catch (error) {
-            console.error('Login error:', error);
+            console.error("Login error:", error);
             toast.error(dict["login.error.generic"]);
         }
     };
@@ -103,30 +103,33 @@ export function LoginForm({
     const handleGoogleLogin = async () => {
         try {
             const redirectUri = `${window.location.origin}${PATHS.AUTH.CALLBACK.GOOGLE(locale)}`;
-            const response = await UserController.initiateGoogleOAuth(redirectUri);
-            
+            const response =
+                await UserController.initiateGoogleOAuth(redirectUri);
+
+            console.log("response in front", response);
             if (response.success && response.data?.authUrl) {
                 window.location.href = response.data.authUrl;
             } else {
                 toast.error(response.error || dict["login.error.generic"]);
             }
         } catch (error) {
-            console.error('Google OAuth error:', error);
+            console.error("Google OAuth error:", error);
             toast.error(dict["login.error.generic"]);
         }
     };
 
     const handleGitHubLogin = async () => {
         try {
-            const response = await UserController.initiateGitHubOAuth(PATHS.AUTH.CALLBACK.GITHUB(locale));
-            router.push("http://localhost:8080/api/v1/authentication/oauth2/github");
+            const response = await UserController.initiateGitHubOAuth(
+                PATHS.AUTH.CALLBACK.GITHUB(locale),
+            );
             if (response.success && response.data?.authUrl) {
                 window.location.href = response.data.authUrl;
             } else {
                 toast.error(response.error || dict["login.error.generic"]);
             }
         } catch (error) {
-            console.error('GitHub OAuth error:', error);
+            console.error("GitHub OAuth error:", error);
             toast.error(dict["login.error.generic"]);
         }
     };
