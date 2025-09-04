@@ -4,7 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
-import { GalleryVerticalEnd } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { cn, getLocalizedPaths } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,12 @@ import { Label } from "@/components/ui/label";
 import GitHub from "./ui/icons/github";
 import Google from "./ui/icons/google";
 import { getDictionary, type Locale } from "@/lib/i18n";
+import SitDownAppPet from "./ui/images/pet/sit-down";
+import { DEFAULTS } from "@/lib/consts";
+import { UserController } from "@/services/iam/user.controller";
+import { SignInRequest } from "@/services/iam/user.request";
+import { useAuth } from "@/lib/hooks/use-auth";
+import env from "@/lib/env";
 
 // Create dynamic schema based on locale
 const createLoginSchema = (dict: ReturnType<typeof getDictionary>) =>
@@ -40,6 +47,8 @@ export function LoginForm({
     const dict = getDictionary(locale);
     const localizedPaths = getLocalizedPaths(locale);
     const loginSchema = createLoginSchema(dict);
+    const router = useRouter();
+    const { login } = useAuth();
 
     const [step, setStep] = useState<"email" | "password">("email");
 
@@ -63,9 +72,50 @@ export function LoginForm({
         }
     };
 
-    const onFormSubmit = (data: LoginFormData) => {
-        console.log("Login data:", data);
-        // TODO: Implement login logic
+    const onFormSubmit = async (data: LoginFormData) => {
+        try {
+            const signInRequest: SignInRequest = {
+                emailOrUsername: data.email,
+                password: data.password,
+            };
+
+            const response = await UserController.signIn(signInRequest);
+
+            if (response.success && response.data) {
+                // Use the auth hook to handle authentication
+                login(
+                    response.data.token || "",
+                    response.data.refreshToken,
+                    response.data.user,
+                );
+
+                toast.success(dict["login.success"]);
+                router.push(localizedPaths.DASHBOARD);
+            } else {
+                toast.error(response.error || dict["login.error"]);
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            toast.error(dict["login.error.generic"]);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        try {
+            window.location.href = `${env.API_BASE_URL}/oauth2/authorization/google`;
+        } catch (error) {
+            console.error("Google OAuth error:", error);
+            toast.error(dict["login.error.generic"]);
+        }
+    };
+
+    const handleGitHubLogin = async () => {
+        try {
+            window.location.href = `${env.API_BASE_URL}/oauth2/authorization/github`;
+        } catch (error) {
+            console.error("GitHub OAuth error:", error);
+            toast.error(dict["login.error.generic"]);
+        }
     };
 
     const handleFormSubmit = handleSubmit((data) => {
@@ -85,10 +135,14 @@ export function LoginForm({
                             href={localizedPaths.HOME}
                             className="flex flex-col items-center gap-2 font-medium"
                         >
-                            <div className="flex size-8 items-center justify-center rounded-md">
-                                <GalleryVerticalEnd className="size-6" />
+                            <div className="flex items-center justify-center rounded-md">
+                                <SitDownAppPet
+                                    width={72}
+                                    height={72}
+                                    alt={dict["pet.alt.sitdown"]}
+                                />
                             </div>
-                            <span className="sr-only">Acme Inc.</span>
+                            <span className="sr-only">{DEFAULTS.APP_NAME}</span>
                         </Link>
                         <h1 className="text-xl font-bold">
                             {dict["login.title"]}
@@ -191,6 +245,8 @@ export function LoginForm({
                             variant="outline"
                             type="button"
                             className="w-full"
+                            onClick={handleGitHubLogin}
+                            disabled={isSubmitting}
                         >
                             <GitHub />
                             {dict["login.continueWith"]} {dict["login.github"]}
@@ -199,6 +255,8 @@ export function LoginForm({
                             variant="outline"
                             type="button"
                             className="w-full"
+                            onClick={handleGoogleLogin}
+                            disabled={isSubmitting}
                         >
                             <Google />
                             {dict["login.continueWith"]} {dict["login.google"]}

@@ -14,6 +14,13 @@ const PATHS = {
     HOME: "/",
     LOGIN: "/auth/login",
     REGISTER: "/auth/register",
+    DASHBOARD: "/dashboard",
+    AUTH: {
+        CALLBACK: {
+            GOOGLE: (locale: Locale) => `/${locale}/auth/callback/google`,
+            GITHUB: (locale: Locale) => `/${locale}/auth/callback/github`,
+        },
+    },
     CHALLENGES: {
         NEW: "/dashboard/challenges/new",
         EDIT: {

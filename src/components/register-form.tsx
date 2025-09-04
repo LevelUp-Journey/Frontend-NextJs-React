@@ -4,7 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
-import { GalleryVerticalEnd } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { cn, getLocalizedPaths } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,12 @@ import { Label } from "@/components/ui/label";
 import GitHub from "./ui/icons/github";
 import Google from "./ui/icons/google";
 import { getDictionary, type Locale } from "@/lib/i18n";
+import { DEFAULTS } from "@/lib/consts";
+import SitDownAppPet from "./ui/images/pet/sit-down";
+import { UserController } from "@/services/iam/user.controller";
+import { SignUpRequest } from "@/services/iam/user.request";
+import { useAuth } from "@/lib/hooks/use-auth";
+import env from "@/lib/env";
 
 // Create dynamic schema based on locale
 const createRegisterSchema = (dict: ReturnType<typeof getDictionary>) =>
@@ -71,6 +78,8 @@ export function RegisterForm({
     const dict = getDictionary(locale);
     const localizedPaths = getLocalizedPaths(locale);
     const registerSchema = createRegisterSchema(dict);
+    const router = useRouter();
+    const { login } = useAuth();
 
     const [step, setStep] = useState<Step>("providers");
 
@@ -135,8 +144,50 @@ export function RegisterForm({
     };
 
     const onFormSubmit = async (data: RegisterFormData) => {
-        console.log("Registration data:", data);
-        // Aquí iría la lógica de registro
+        try {
+            const signUpRequest: SignUpRequest = {
+                email: data.email,
+                username: data.username,
+                password: data.password
+            };
+
+            const response = await UserController.signUp(signUpRequest);
+            
+            if (response.success && response.data) {
+                // Use the auth hook to handle authentication
+                login(
+                    response.data.token || '',
+                    response.data.refreshToken,
+                    response.data.user
+                );
+
+                toast.success(dict["register.success"]);
+                router.push(localizedPaths.DASHBOARD);
+            } else {
+                toast.error(response.error || dict["register.error"]);
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            toast.error(dict["register.error.generic"]);
+        }
+    };
+
+    const handleGoogleRegister = async () => {
+        try {
+            window.location.href = `${env.API_BASE_URL}/oauth2/authorization/google`;
+        } catch (error) {
+            console.error('Google OAuth error:', error);
+            toast.error(dict["register.error.generic"]);
+        }
+    };
+
+    const handleGitHubRegister = async () => {
+        try {
+            window.location.href = `${env.API_BASE_URL}/oauth2/authorization/github`;
+        } catch (error) {
+            console.error('GitHub OAuth error:', error);
+            toast.error(dict["register.error.generic"]);
+        }
     };
 
     const handleFormSubmit = handleSubmit((data) => {
@@ -157,6 +208,8 @@ export function RegisterForm({
                                 variant="outline"
                                 type="button"
                                 className="w-full"
+                                onClick={handleGitHubRegister}
+                                disabled={isSubmitting}
                             >
                                 <GitHub />
                                 {dict["register.continueWith"]}{" "}
@@ -166,6 +219,8 @@ export function RegisterForm({
                                 variant="outline"
                                 type="button"
                                 className="w-full"
+                                onClick={handleGoogleRegister}
+                                disabled={isSubmitting}
                             >
                                 <Google />
                                 {dict["register.continueWith"]}{" "}
@@ -359,10 +414,14 @@ export function RegisterForm({
                             href={localizedPaths.HOME}
                             className="flex flex-col items-center gap-2 font-medium"
                         >
-                            <div className="flex size-8 items-center justify-center rounded-md">
-                                <GalleryVerticalEnd className="size-6" />
+                            <div className="flex items-center justify-center rounded-md">
+                                <SitDownAppPet
+                                    width={72}
+                                    height={72}
+                                    alt={dict["pet.alt.sitdown"]}
+                                />
                             </div>
-                            <span className="sr-only">LevelUp Journey</span>
+                            <span className="sr-only">{DEFAULTS.APP_NAME}</span>
                         </Link>
                         <h1 className="text-xl font-bold">{getStepTitle()}</h1>
                         <div className="text-center text-sm">
