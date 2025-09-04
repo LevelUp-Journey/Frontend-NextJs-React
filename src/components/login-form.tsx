@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { cn, getLocalizedPaths } from "@/lib/utils";
-import PATHS from "@/lib/paths";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +19,7 @@ import { DEFAULTS } from "@/lib/consts";
 import { UserController } from "@/services/iam/user.controller";
 import { SignInRequest } from "@/services/iam/user.request";
 import { useAuth } from "@/lib/hooks/use-auth";
+import env from "@/lib/env";
 
 // Create dynamic schema based on locale
 const createLoginSchema = (dict: ReturnType<typeof getDictionary>) =>
@@ -102,16 +102,7 @@ export function LoginForm({
 
     const handleGoogleLogin = async () => {
         try {
-            const redirectUri = `${window.location.origin}${PATHS.AUTH.CALLBACK.GOOGLE(locale)}`;
-            const response =
-                await UserController.initiateGoogleOAuth(redirectUri);
-
-            console.log("response in front", response);
-            if (response.success && response.data?.authUrl) {
-                window.location.href = response.data.authUrl;
-            } else {
-                toast.error(response.error || dict["login.error.generic"]);
-            }
+            window.location.href = `${env.API_BASE_URL}/oauth2/authorization/google`;
         } catch (error) {
             console.error("Google OAuth error:", error);
             toast.error(dict["login.error.generic"]);
@@ -120,14 +111,7 @@ export function LoginForm({
 
     const handleGitHubLogin = async () => {
         try {
-            const response = await UserController.initiateGitHubOAuth(
-                PATHS.AUTH.CALLBACK.GITHUB(locale),
-            );
-            if (response.success && response.data?.authUrl) {
-                window.location.href = response.data.authUrl;
-            } else {
-                toast.error(response.error || dict["login.error.generic"]);
-            }
+            window.location.href = `${env.API_BASE_URL}/oauth2/authorization/github`;
         } catch (error) {
             console.error("GitHub OAuth error:", error);
             toast.error(dict["login.error.generic"]);
